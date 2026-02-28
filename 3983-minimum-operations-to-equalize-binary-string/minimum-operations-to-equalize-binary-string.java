@@ -1,42 +1,28 @@
 class Solution {
     public int minOperations(String s, int k) {
-        int n=s.length();
-        int []dp=new int[n+1];
-        Arrays.fill(dp,-1);
-        TreeSet<Integer> even = new TreeSet<>();
-        TreeSet<Integer> odd = new TreeSet<>();
-        for (int i = 2; i <= n; i += 2) even.add(i);
-        for (int i = 1; i <= n; i += 2) odd.add(i);
-        dp[0]=0;
-        Queue<Integer>q=new LinkedList<>();
-        q.add(0);
-        while(!q.isEmpty()){
-            int x=q.poll();
-            int minz=Math.max(0,k-(n-x) );
-            int maxz=Math.min(x,k);
-            int stx=x+k-2*maxz;
-            int endx=x+k-2*minz;
-        
-            TreeSet<Integer>set=((stx%2)==0)?even:odd;
+        int n = s.length();
 
-            Integer curr=set.ceiling(stx);
-            while(curr!=null && curr<=endx){
-                dp[curr]=1+dp[x];
-                q.add(curr);
-                Integer next = set.higher(curr);
-                set.remove(curr);
-                curr = next;
-            }
-
+        int one=0,zero=0;
+        for(char ch : s.toCharArray()){
+            if(ch=='0') zero++;
+            else one++;
         }
-        int cnt=0;
-        for(char ch:s.toCharArray()){
-            if(ch=='0'){
-                cnt++;
-            }
+        if(zero==0) return 0;
+        if(zero==k) return 1;
+        if(k==1) return zero;
+        if(k>=n) return -1;
+
+        for(int ans=2 ; ans<=n ; ans++){
+            int change = ans*k;
+
+            if(change<zero) continue;
+            if((change-zero)%2==1) continue;
+
+            if(change==zero) return ans;
+
+            if((ans&1)==1 && (zero + (ans-1)*n >= change)) return ans;
+            else if((ans&1)==0 && (zero+(ans-2)*n + one*2) >= change) return ans;
         }
-
-
-        return dp[cnt];
+        return -1;
     }
 }
